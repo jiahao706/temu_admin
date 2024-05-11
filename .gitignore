@@ -14,8 +14,8 @@ yarn-error.log
 /public/selenium
 .idea
 /docker_common
-/app/storage/temu_cookies/*
-/app/storage/export/*
-/app/storage/logs/*
+/storage/temu_cookies/*
+/storage/export/*
+/storage/logs/*
 
 
