@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+  php73_18:
+    image: "my:php_fpm_7.3.18_v4"
+    ports:
+      - "9000:9000"
+      - "80:80"
+    cap_add:
+      - SYS_PTRACE
+    volumes:
+      - "/etc/localtime:/etc/localtime"
+      - "/Users/jiahao/softenv/docker_common/log/php/:/var/log/php/"
+      - "/Users/jiahao/softenv/docker_common/conf/php/php.ini:/usr/local/etc/php/php.ini"
+      - "/Users/jiahao/softenv/docker_common/conf/php/php-fpm.conf:/usr/local/etc/php-fpm.conf"
+      - "/Users/jiahao/softenv/docker_common/conf/php/php-fpm.d/:/usr/local/etc/php-fpm.d/"
+      - "/Users/jiahao/softenv/docker_common/conf/nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf"
+      - "/Users/jiahao/softenv/docker_common/conf/nginx/vhosts:/usr/local/openresty/nginx/conf/vhosts/"
+      - "/Users/jiahao/softenv/docker_common/log/nginx/:/var/log/nginx/"
+      - "/Users/jiahao/code/temu:/application/www/temu"
+    working_dir: "/application/www"
+    networks:
+      - temu
+    container_name: php73_18
+    restart: always
+    privileged: true
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    #command: bash -c "service cron start && php-fpm -D && openresty && nohup chromedriver --port=4444 --allowed-ips=127.0.0.1 >/chromedriver.log 2>\\&1 \\& && echo 'php-fpm and openresty and cron and chromedriver start success !' && tail -f /dev/null"
+    command: bash -c "service cron start && php-fpm -D && openresty && echo 'php-fpm and openresty and cron start success !' && tail -f /dev/null"
+  mysql_5.6:
+    image: "my:mysql_5.6.35"
+    ports:
+      - "3306:3306"
+    networks:
+      - temu
+    volumes:
+      - "/etc/localtime:/etc/localtime"
+      - "/Users/jiahao/softenv/docker_common/conf/mysql/test:/application/www/test"
+      - "/Users/jiahao/softenv/docker_common/conf/mysql/data:/var/lib/mysql"
+      - "/Users/jiahao/softenv/docker_common/conf/mysql/conf/my.cnf:/etc/my.cnf"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=dongjiahao"
+      - "MYSQL_DATABASE=mysql"
+      - "TZ=Asia/shanghai"
+    container_name: db
+    restart: always
+    privileged: true
+networks:
+  temu:
+    #driver: bridge
+    external: true
